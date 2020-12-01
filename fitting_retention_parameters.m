@@ -3,6 +3,8 @@
 %Authors: Hillmert Solano, Matteo Icardi, Juan M. Mejía
 %Institutions: University of Nottingham & Universidad Nacional de Colombia
 %Corresponding mail: hasolanor@unal.edu.co
+%This file and the orhers are licensed. Check this in the license file that
+%is avaliable in the repository
 
 %DESCRIPTION
 %This algorithm seeks a set of retention model parameters that allows to
