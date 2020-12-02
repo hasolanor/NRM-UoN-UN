@@ -9,15 +9,20 @@ Authors: Hillmert A. Solano (1), Matteo Icardi (2), Nicolás Bueno (1), Juan M. 
 
 Corresponding e-mail: hasolanor@unal.edu.co
 
-Note: To run any of the scripts, ChebFun must be downloaded:
+Note: To run any of the scripts, ChebFun must be downloaded. Some hints are in the site: https://www.chebfun.org/download/
 
-git clone https://github.com/chebfun/chebfun.git
-
-# fitting_retention_parameters
+## fitting_retention_parameters
 This script computes a set of model parameters for which the model reachs the best agreement with experimental data. This code minimise the error between both results. As input, experimental data, experiments conditions, and model seed are requested.
 
-# linear_problem_simulation
+## linear_problem_simulation
 This script simulates a nanofluid injection under linear flow condition. As input, modelling parameters are requested.
 
-# radial_problem_simulation
+## radial_problem_simulation
 This script simulates a nanofluid injection under radial flow condition. As input, modelling parameters are requested.
+
+# References
+* Solano, H.A., Icardi, M., Mejía J.M.: Nanoparticle transport and retention in porousmedia: Darcy-scale modelling and dimensionalanalysis. Submitted to publication (2020).
+
+* Zhang,  T.:  Modeling  of  Nanoparticle  Transport  in  Porous  Media. PhD  Dissertation,The University of Texas at Austin (2012). URL http://hdl.handle.net/2152/ETD-UT-2012-08-6044
+
+* Platte, R.B., Trefethen, L.N.: Chebfun: A New Kind of Numerical Computing. In: A.D.Fitt, J. Norbury, H. Ockendon, E. Wilson (eds.) Progress in Industrial Mathematics atECMI 2008, Mathematics in Industry, pp. 69–87. Springer, Berlin, Heidelberg (2010).DOI 10.1007/978-3-642-12110-45.  
