@@ -9,6 +9,10 @@ Authors: Hillmert A. Solano (1), Matteo Icardi (2), Nicolás Bueno (1), Juan M. 
 
 Corresponding e-mail: hasolanor@unal.edu.co
 
+Note: To run any of the scripts, ChebFun must be downloaded:
+
+git clone https://github.com/chebfun/chebfun.git
+
 # fitting_retention_parameters
 This script computes a set of model parameters for which the model reachs the best agreement with experimental data. This code minimise the error between both results. As input, experimental data, experiments conditions, and model seed are requested.
 
