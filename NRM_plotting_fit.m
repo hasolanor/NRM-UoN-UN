@@ -1,4 +1,4 @@
-function [init,x]=NRM_initialisation(name,cond,radial)
+function NRM_plotting_fit(solution,exp,cond)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Authors: Hillmert Solano, Nicolás Bueno, Matteo Icardi, Juan M. Mejía
 %Institutions: University of Nottingham & Universidad Nacional de Colombia
@@ -33,53 +33,24 @@ function [init,x]=NRM_initialisation(name,cond,radial)
 %Springer, Berlin, Heidelberg (2010).DOI 10.1007/978-3-642-12110-45.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%initialisation function initialisates the problem assigning initial and
-% boundary conditions
-%   name: name of the retention model
+%optimisation function seeks the best set of parameters matching with the
+%experimental data
+%   exp: experimental data (contains exp.t, exp.c, exp.C, exp.dc)
+%   solution: solution data
+%   model: model data (contains model.name and model.parameters)
 %   cond: experimental parameters (contain cond.c and cond.v)
+%   x: spatial domain (a pre-defined chebfun is expected)
+%   init: initial and boundary conditions (contain init.sol0 and init.bc)
 
-
-if (radial=="yes")
-    x = chebfun(@(x) x, [1 cond.rmx]);
-    u0 = cond.c.*(1-tanh((x-1)*100)); %Initial condition
-    s0 = u0*0; %Initial condition
-    
-    init.sol0=[s0, u0];
-    
-    init.bc.left = @(t,s,u) u-cond.c*0.5*(1-erf(1000*(t-cond.slug)));
-    init.bc.right = @(t,s,u) diff(u); %Left Condition on boundary
-
-else %Linear flow-
-    
-    %Spatial domain using chebfun
-    x = chebfun(@(x) x, [0 1]);
-    %Retained concentration at starting is zero.
-    s0 = x.*0; %Initial condition for retention
-    s1 = x.*0; %Initial condition for retention in the irreversible site -ITSM
-
-    %Array-assignment.
-    for i=1:length(cond) 
-        %Initial condition: Injection concentration at injection corresponds
-        %to boundary condition. The others are zero.
-        u0 = cond(i).c.*(1-tanh((x-0.05)*100))/2; %Initial condition f
-        if name=="ITSM"
-            % Two active sites
-            init(i).sol0=[s0,s1,u0];
-        elseif (name=="SBIM"|name=="langmuir")
-            % One active sites
-            init(i).sol0=[s0,u0];
-        else
-            % No retention case
-            init(i).sol0=[u0];
-        end
-        %Boundary condition for concentration at injection changes when nano-
-        %fluid slug ends. It is a fixed-value condition
-        init(i).bc.left = @(t,s,u) u-cond.c*(1-tanh((t-cond(i).slug-0.05)*1000))/2;
-        %Boundary condition for concentration at production is zeroGradient
-        init(i).bc.right = @(t,s,u) diff(u);
-    end
-
+figure(1)
+for i=1:length(exp)
+    plot(solution.t,solution.u(max(x),:)); hold on
+    plot(exp.t,exp.c,'d');
+    lgn(2*i)=string(cond(i).v);
+    lgn(2*i-1)=string(cond(i).v);
+    xlabel('$u_Dt_D$','Interpreter','Latex');
+    ylabel('$c_D(x_D=1)$','Interpreter','Latex');
+    title('Breakthrough curve concentration','Interpreter','Latex')
 end
-
-end
-
+lgd=legend(lgn,'Interpreter','Latex');
+title(lgd,'$t_D$','Interpreter','Latex');

@@ -1,4 +1,4 @@
-function [exp] = NRM_readfiles(files,plotting)
+function NRM_plotting(x,solution,time,plott,type)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Authors: Hillmert Solano, Nicolás Bueno, Matteo Icardi, Juan M. Mejía
 %Institutions: University of Nottingham & Universidad Nacional de Colombia
@@ -33,30 +33,59 @@ function [exp] = NRM_readfiles(files,plotting)
 %Springer, Berlin, Heidelberg (2010).DOI 10.1007/978-3-642-12110-45.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%readfiles function reads the experimental data from txt files
-%   files: string array with files name. One file corresponds one
-%   experiment.
-%   plotting: boleaan variable indicating if plotting
+%plotting_well function plots the concentration profiles for a radial flow
+%of nanofluid injection
+%   solution: solution data
+%   time: printing time
+%   plott: if plots are requested
 
-for i=1:length(files)
-    fileID=fopen(files(i),'r');
-    [A, count] = fscanf(fileID,'%f %f');
-    fclose(fileID);
-    A = reshape(A,2,0.5*count)';    
-    exp(i).t=A(:,1)'; exp(i).c=A(:,2)';
-    
-    %Computing cumulative and derivative
-    exp(i).C=NRM_cumfunction(exp(i).t,exp(i).c); %Same size of exp.t
-    exp(i).dc=NRM_derivative(exp(i).t,exp(i).c); %Size: size of exp.t-2
-    
-    %Plotting option
-    if (plotting=="true")
-        figure(1)
-        plot(exp(i).t, exp(i).c,'*'); hold on;
-        
-        figure(2)
-        plot(exp(i).t, exp(i).C,'*'); hold on;
+if plott=="yes"
+    figure(1)
+    hold on;
+    title('Nanoparticle-in-fluid concentration','Interpreter','Latex')
+    xlim([min(x) max(x)]);
+    if type=="linear"
+        xlabel('$x_D$','Interpreter','Latex');
+    elseif type=="radial"
+        xlabel('$r_D$','Interpreter','Latex');
     end
-    clear A
- end
+    ylabel('$c_D$','Interpreter','Latex');
+
+    figure(2)
+    hold on;
+    title('Nanoparticle-on-rock concentration','Interpreter','Latex')
+    xlim([min(x) max(x)]);
+    if type=="linear"
+        xlabel('$x_D$','Interpreter','Latex');
+    elseif type=="radial"
+        xlabel('$r_D$','Interpreter','Latex');
+    end
+    ylabel('$s_D$','Interpreter','Latex');
+
+    for i=1:length(time)
+        plot_pos=find(solution.t==time(i));
+        lgn(i)=string(num2str(time(i)));
+        figure(1)
+        plot(solution.u(:,plot_pos));
+
+        figure(2)
+        plot(solution.s(:,plot_pos));
+
+    end
+    figure(1)
+    lgd=legend(lgn,'Interpreter','Latex');
+    title(lgd,'$t_D$','Interpreter','Latex');
+    figure(2)
+    lgd=legend(lgn,'Interpreter','Latex');
+    title(lgd,'$t_D$','Interpreter','Latex');
+    
+    if type=="linear"
+        figure(3)
+        plot(solution.t,solution.u(max(x),:));
+        xlabel('$u_Dt_D$','Interpreter','Latex');
+        ylabel('$c_D(x_D=1)$','Interpreter','Latex');
+        title('Breakthrough curve concentration','Interpreter','Latex')
+    end
 end
+end
+

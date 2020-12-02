@@ -1,4 +1,4 @@
-function [exp] = NRM_readfiles(files,plotting)
+%% Linear Problem Simulation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Authors: Hillmert Solano, Nicolás Bueno, Matteo Icardi, Juan M. Mejía
 %Institutions: University of Nottingham & Universidad Nacional de Colombia
@@ -33,30 +33,23 @@ function [exp] = NRM_readfiles(files,plotting)
 %Springer, Berlin, Heidelberg (2010).DOI 10.1007/978-3-642-12110-45.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%readfiles function reads the experimental data from txt files
-%   files: string array with files name. One file corresponds one
-%   experiment.
-%   plotting: boleaan variable indicating if plotting
 
-for i=1:length(files)
-    fileID=fopen(files(i),'r');
-    [A, count] = fscanf(fileID,'%f %f');
-    fclose(fileID);
-    A = reshape(A,2,0.5*count)';    
-    exp(i).t=A(:,1)'; exp(i).c=A(:,2)';
-    
-    %Computing cumulative and derivative
-    exp(i).C=NRM_cumfunction(exp(i).t,exp(i).c); %Same size of exp.t
-    exp(i).dc=NRM_derivative(exp(i).t,exp(i).c); %Size: size of exp.t-2
-    
-    %Plotting option
-    if (plotting=="true")
-        figure(1)
-        plot(exp(i).t, exp(i).c,'*'); hold on;
-        
-        figure(2)
-        plot(exp(i).t, exp(i).C,'*'); hold on;
-    end
-    clear A
- end
-end
+clear all
+close all
+clc
+
+cond.c=1; cond.v=1; cond.slug=2.9;
+
+model.name='SBIM';
+model.parameters=[10.9092 5.46612 0 0.172341 0 1.0000];
+
+[init,x]=NRM_initialisation(model.name,cond,"not");
+
+solution.t=[0:0.1:7]; iPe=[0.125,0.047];
+
+solution=NRM_solution(solution.t,iPe,model.name,model.parameters,cond,x,init)
+
+%Plotting nanoparticle concentration profiles
+t_print=0:1:7;
+
+NRM_plotting(x,solution,t_print,"yes","linear");

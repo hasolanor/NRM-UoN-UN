@@ -1,9 +1,9 @@
 %% Fitting Retention Parameters 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Authors: Hillmert Solano, Matteo Icardi, Juan M. Mejía
+%Authors: Hillmert Solano, Nicolás Bueno, Matteo Icardi, Juan M. Mejía
 %Institutions: University of Nottingham & Universidad Nacional de Colombia
 %Corresponding mail: hasolanor@unal.edu.co
-%This file and the orhers are licensed. Check this in the license file that
+%This file and the others are licensed. Check this in the license file that
 %is avaliable in the repository
 
 %DESCRIPTION
@@ -62,13 +62,21 @@ model.name="SBIM";
 model.parameters= [4, 0.5, 1.5 1 0 0];
 
 %Initialisation algorithm. Return the initial and the boundary condition
-%functions.
-[init,x]=NRM_initialisation(model.name,cond);
+%functions. Radial is not activated
+[init,x]=NRM_initialisation(model.name,cond,'not');
 
 %iPe: Contains hydrodynamic parameters
-% in order (1): Péclet Number, (2): dimensionless dispersivity
+% in order (1):inverse Péclet Number,(2):inverse dimensionless dispersivity
 iPe=[0.0133,0.1356];
 
 %Optimisation algorithm. Return the best array of model parameters matching
 %with the experimental data, according to the seed 
 [optimisation]=NRM_optimisation(exp(1),iPe,model,cond(1),x,init(1));
+
+%Plotting the matching between experimental and modelling data
+t=0:0.1:7;
+for i=1:length(exp)
+    opsolution(i)=NRM_solution(t,iPe,model.name,optimisation.parameters,...
+        cond(i),x,init(i));
+end
+NRM_plotting_fit(opsolution,exp,cond);

@@ -1,9 +1,9 @@
-function [optimisation]=NRM_optimisation(exp,iPe,model,cond,x,init)
+function [solution] = NRM_solution_well(solution,iPe,model,x,cond,init)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Authors: Hillmert Solano, Nicolás Bueno, Matteo Icardi, Juan M. Mejía
+%Authors: Hillmert Solano, Matteo Icardi, Juan M. Mejía
 %Institutions: University of Nottingham & Universidad Nacional de Colombia
 %Corresponding mail: hasolanor@unal.edu.co
-%This file and the others are licensed. Check this in the license file that
+%This file and the orhers are licensed. Check this in the license file that
 %is avaliable in the repository
 
 %DESCRIPTION
@@ -33,24 +33,45 @@ function [optimisation]=NRM_optimisation(exp,iPe,model,cond,x,init)
 %Springer, Berlin, Heidelberg (2010).DOI 10.1007/978-3-642-12110-45.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%optimisation function seeks the best set of parameters matching with the
-%experimental data
-%   exp: experimental data (contains exp.t, exp.c, exp.C, exp.dc)
-%   iPe: dimensionless hydrodynamic variables (Péclet and dispersivity)
+%solution_well function solve numerically the mathematical model based on 
+% a PDE-customised problem for radial flow
+%   solution: solution data (contains solution.t, solution.c)
+%   iPe: dimensionless hydrodynamic variables (inv. Péclet and dispersivity)
 %   model: model data (contains model.name and model.parameters)
 %   cond: experimental parameters (contain cond.c and cond.v)
 %   x: spatial domain (a pre-defined chebfun is expected)
 %   init: initial and boundary conditions (contain init.sol0 and init.bc)
+
+%Numerical Control
+opts = pdeset('Eps', 1e-6);
+
+if model.name=="SBIM"
+    Da0=model.parameters(1);
+    Da1=model.parameters(2);
+    ks0=model.parameters(3);
+    kcs0=model.parameters(4);
+    ks1=model.parameters(5);
+    kcs1=model.parameters(6);
+
+    %Retention Function for SBIM
+    F=@(c,s,x) Da0.*(c-ks0.*s-kcs0.*c.*s.*cond.c)+...
+        Da1.*(c-ks1.*s-kcs1.*c.*s.*cond.c)*cond.v./x; 
     
+elseif model.name=="langmuir"
+    Da0=model.parameters(1);
+    ks0=model.parameters(2);
+    kcs0=model.parameters(3)^(-1);
 
-%Minimisation of an error function
-[xopt]=fminsearch(@(par) NRM_error(exp,iPe,model.name,...
-    par,cond,x,init), model.parameters);
-
-%Assignment of best-matching parameters 
-optimisation.parameters = xopt;
-
-
-
+    %Retention Function for Langmuir
+    F=@(c,s,x) Da0.*(c-ks0.*s-kcs0.*c.*s.*cond.c);
 end
 
+pdefun = @(t,x,s,u) [F(u,s,x);...
+    -F(u,s,x)-(cond.v-2.*iPe(1)-iPe(2).*cond.v./x).*(1./x).*diff(u,1)+...
+    (iPe(1)+iPe(2).*cond.v./x).*diff(u,2)-(iPe(2).*cond.v.*(u./x.^2))];
+
+t=solution.t;
+[solution.t, solution.s, solution.u] = ...
+    pde23t(pdefun, t, init.sol0, init.bc, opts);
+
+end
