@@ -74,7 +74,7 @@ else %Linear flow-
         end
         %Boundary condition for concentration at injection changes when nano-
         %fluid slug ends. It is a fixed-value condition
-        init(i).bc.left = @(t,s,u) u-cond.c*(1-tanh((t-cond(i).slug-0.05)*1000))/2;
+        init(i).bc.left = @(t,s,u) u-(cond(i).c/2)*(1-tanh((t-cond(i).slug-0.05)*1000));
         %Boundary condition for concentration at production is zeroGradient
         init(i).bc.right = @(t,s,u) diff(u);
     end

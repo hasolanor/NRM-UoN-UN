@@ -59,15 +59,15 @@ files = ["exp91.txt", "exp92.txt"];
 model.name="SBIM";
 %model.parameters: optimisation seed. For SBIM, 6 parameters are expected
 %(1): N_Da(0), (2): N_Da(1), (3): ks(0), (4): kcs(0), (5): ks(1), (6): kcs(1)
-model.parameters= [4, 0.5, 1.5 1 0 0];
+model.parameters=[10.9092 5.46612 0 0.172341 0 1.0000];
 
 %Initialisation algorithm. Return the initial and the boundary condition
 %functions. Radial is not activated
-[init,x]=NRM_initialisation(model.name,cond,'not');
+[init,x]=NRM_initialisation(model.name,cond,"not");
 
 %iPe: Contains hydrodynamic parameters
 % in order (1):inverse Péclet Number,(2):inverse dimensionless dispersivity
-iPe=[0.0133,0.1356];
+iPe=[0.125,0.047];
 
 %Optimisation algorithm. Return the best array of model parameters matching
 %with the experimental data, according to the seed 
